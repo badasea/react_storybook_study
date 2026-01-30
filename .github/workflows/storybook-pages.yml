@@ -13,12 +13,17 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: taskbox  # <- 네 package.json 있는 폴더명으로 변경
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: yarn
+          cache-dependency-path: taskbox/yarn.lock  # <- yarn.lock 위치
 
       - run: yarn install --frozen-lockfile
       - run: yarn build-storybook
@@ -26,7 +31,7 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./storybook-static
+          path: taskbox/storybook-static
 
   deploy:
     needs: build
